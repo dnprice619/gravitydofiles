@@ -547,7 +547,7 @@ areg lnv i.demotreat_o##i.demotreat_d lny lnd contig comlang_off colony gatt_bot
 	br yhat lnv
 
 areg lnv i.demotreat_d##i.demotreat_o lny lnd contig comlang_off colony gatt_both gatt_d fta_wto ///
-	i.year, absorb(impexp) cluster(impexp)
+	i.year if year<2009, absorb(impexp) cluster(impexp)
 	predict yhat2
 
 twoway (scatter yhat lnv)(lfit yhat lnv) if year>=2009, title(Predicted vs. Observed Trade) ///
@@ -561,7 +561,24 @@ twoway (scatter yhat lnv)(lfit yhat lnv) if year>=2009 & name_o!="China" & name_
 twoway (scatter yhat2 lnv)(lfit yhat2 lnv) if year>=2009, title(Predicted vs. Observed Trade) ///
 	subtitle(Country FE Without Linear Trends) ytitle(Predicted Values) xtitle(Observed Values) ///
 	legend(order(1 "Log(Real Trade)" 2 "Linear Fit"))
+	
+************************************************************************************
+*********************************************************************************************************
+*********************************************************************************************************
+*********************************************************************************************************
+*********************************************************************************************************
+************************************************************************************
 
+*Try prediction but over first 5 years of sample instead of last 5 years 
+areg lnv i.demotreat_o##i.demotreat_d lny lnd contig comlang_off colony gatt_both gatt_d fta_wto ///
+	i.year yr* yii* yee* if year>1969, absorb(impexp) cluster(impexp)
+	predict yhat3
+	br yhat lnv
+
+areg lnv i.demotreat_d##i.demotreat_o lny lnd contig comlang_off colony gatt_both gatt_d fta_wto ///
+	i.year if year>1969, absorb(impexp) cluster(impexp)
+	predict yhat4
+	
 *show
 preserve
 collapse yhat lnv, by(name_d)
