@@ -550,15 +550,13 @@ areg lnv i.demotreat_d##i.demotreat_o lny lnd contig comlang_off colony gatt_bot
 	i.year if year<2009, absorb(impexp) cluster(impexp)
 	predict yhat2
 
-twoway (scatter yhat lnv)(lfit yhat lnv) if year>=2009, title(Predicted vs. Observed Trade) ///
+*Graphs for prediction 
+twoway (scatter yhat lnv)(lfit yhat lnv), title(Predicted vs. Observed Trade) ///
 	subtitle(Country FE With Linear Trends) ytitle(Predicted Values) xtitle(Observed Values) ///
 	legend(order(1 "Log(Real Trade)" 2 "Linear Fit"))
 
-twoway (scatter yhat lnv)(lfit yhat lnv) if year>=2009 & name_o!="China" & name_d!="China", title(Predicted vs. Observed Trade) ///
-	subtitle(Country FE With Linear Trends) ytitle(Predicted Values) xtitle(Observed Values) ///
-	legend(order(1 "Log(Real Trade)" 2 "Linear Fit")) note(Excludes China
 
-twoway (scatter yhat2 lnv)(lfit yhat2 lnv) if year>=2009, title(Predicted vs. Observed Trade) ///
+twoway (scatter yhat2 lnv)(lfit yhat2 lnv), title(Predicted vs. Observed Trade) ///
 	subtitle(Country FE Without Linear Trends) ytitle(Predicted Values) xtitle(Observed Values) ///
 	legend(order(1 "Log(Real Trade)" 2 "Linear Fit"))
 	
@@ -578,6 +576,16 @@ areg lnv i.demotreat_o##i.demotreat_d lny lnd contig comlang_off colony gatt_bot
 areg lnv i.demotreat_d##i.demotreat_o lny lnd contig comlang_off colony gatt_both gatt_d fta_wto ///
 	i.year if year>1969, absorb(impexp) cluster(impexp)
 	predict yhat4
+
+*linear trends first 5 years 
+twoway (scatter yhat3 lnv)(lfit yhat3 lnv), title(Predicted vs. Observed Trade First 5 Years of Sample) ///
+	subtitle(Country FE With Linear Trends) ytitle(Predicted Values) xtitle(Observed Values) ///
+	legend(order(1 "Log(Real Trade)" 2 "Linear Fit")) note("predicted over first 5 years of sample 1964-1969") 
+
+*no linear trends first 5 years
+twoway (scatter yhat4 lnv)(lfit yhat4 lnv), title(Predicted vs. Observed Trade First 5 Years of Sample) ///
+	subtitle(Country FE Without Linear Trends) ytitle(Predicted Values) xtitle(Observed Values) ///
+	legend(order(1 "Log(Real Trade)" 2 "Linear Fit")) note(predicted over first 5 years of sample) 
 	
 *show
 preserve
@@ -695,6 +703,11 @@ areg lnv i.demotreat_o##i.demotreat_d Le6demotreat_o#Le6demotreat_d lny i.year y
 
 *country pair leads ???
 
+**************************************************************************************************************
+**************************************************************************************************************
+**************************************************************************************************************
+**************************************************************************************************************
+
 
 *time heterogeneity
 *split sample in half???
@@ -724,13 +737,27 @@ est sto r34
 esttab r34
 *outreg2 using timehettable, append excel
 
-*regions??
-areg lnv i.demotreat_d##i.demotreat_o lny i.year yr* yii* yee* if regioncode_d==1, ///
-	absorb(impexp) cluster(impexp)
-est sto r34
-esttab r34
-*outreg2 using timehettable, append excel
 
+*Heterogeneity by region 
+tab regioncode_d region_d
+
+*using country FE model 
+*regions??
+forvalues x=1/5{
+areg lnv i.demotreat_d##i.demotreat_o lny i.year if regioncode_d==`x', ///
+	absorb(impexp) cluster(impexp)
+est sto r4`x'
+esttab r4`x'
+*outreg2 using Regionstable, append excel
+}
+
+forvalues x=1/5{
+areg lnv i.demotreat_d##i.demotreat_o lny i.year if regioncode_o==`x', ///
+	absorb(impexp) cluster(impexp)
+est sto r5`x'
+esttab r5`x'
+*outreg2 using Regionstable, append excel
+}
 
 
 *out of sample prediction
