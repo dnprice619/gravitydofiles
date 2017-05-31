@@ -417,19 +417,19 @@ reg lnv i.demotreat_o lny lnd contig comlang_off colony gatt_both gatt_d fta_wto
 	i.year ee* ii*, r
 est sto r4
 esttab r4
-*outreg2 using res2_exporter, append excel
+*outreg2 using res2_ee&ii, append excel
 
 reg lnv i.demotreat_d lny lnd contig comlang_off colony gatt_both gatt_d fta_wto ///
 	i.year ee* ii*, r
 est sto r5
 esttab r5
-*outreg2 using res2_exporter, append excel
+*outreg2 using res2_ee&ii, append excel
 
 reg lnv i.demotreat_d##i.demotreat_o lny lnd contig comlang_off colony gatt_both gatt_d fta_wto ///
 	i.year ee* ii*, r
 est sto r6
 esttab r6
-*outreg2 using res2_exporter, append excel
+*outreg2 using res2_ee&ii, append excel
 
 ********************************************************************************
 *what is the counterfactual here??????
