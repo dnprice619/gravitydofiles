@@ -550,11 +550,11 @@ areg lnv i.demotreat_d##i.demotreat_o lny lnd contig comlang_off colony gatt_bot
 	i.year, absorb(impexp) cluster(impexp)
 	predict yhat2
 
-twoway (scatter yhat3 lnv)(lfit yhat3 lnv) if year>=2009, title(Predicted vs. Observed Trade) ///
+twoway (scatter yhat lnv)(lfit yhat lnv) if year>=2009, title(Predicted vs. Observed Trade) ///
 	subtitle(Country FE With Linear Trends) ytitle(Predicted Values) xtitle(Observed Values) ///
 	legend(order(1 "Log(Real Trade)" 2 "Linear Fit"))
 
-twoway (scatter yhat3 lnv)(lfit yhat3 lnv) if year>=2009 & name_o!="China" & name_d!="China", title(Predicted vs. Observed Trade) ///
+twoway (scatter yhat lnv)(lfit yhat lnv) if year>=2009 & name_o!="China" & name_d!="China", title(Predicted vs. Observed Trade) ///
 	subtitle(Country FE With Linear Trends) ytitle(Predicted Values) xtitle(Observed Values) ///
 	legend(order(1 "Log(Real Trade)" 2 "Linear Fit")) note(Excludes China
 
