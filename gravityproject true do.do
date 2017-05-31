@@ -688,6 +688,10 @@ gen Le3demotreat_d = demotreat_d[_n+3] if name_d==name_d[_n+3]
 
 gen Le6demotreat_d = demotreat_d[_n+6] if name_d==name_d[_n+6]
 
+gen Le8demotreat_d = demotreat_d[_n+8] if name_d==name_d[_n+8]
+
+gen Le10demotreat_d = demotreat_d[_n+10] if name_d==name_d[_n+10]
+
 *exporter
 gen Le1demotreat_o = demotreat_o[_n+1] if name_o==name_o[_n+1]
 
@@ -697,9 +701,117 @@ gen Le3demotreat_o = demotreat_o[_n+3] if name_o==name_o[_n+3]
 
 gen Le6demotreat_o = demotreat_o[_n+6] if name_o==name_o[_n+6]
 
+gen Le8demotreat_o = demotreat_o[_n+8] if name_o==name_o[_n+8]
 
-areg lnv i.demotreat_o##i.demotreat_d Le6demotreat_o#Le6demotreat_d lny i.year yii* yee*, absorb(impexp) cluster(impexp)
+gen Le10demotreat_o = demotreat_o[_n+10] if name_o==name_o[_n+10]
 
+*use leads and lags to check for endogeneity/anticipation effect in model 
+
+
+*tau graph??? 
+egen min_demo_d = min(year) if demotreat_d==1, by(name_d)
+
+egen min_demo_o = min(year) if demotreat_o==1, by(name_o)
+
+
+gen firstdemo_d=0 
+gen firstdemo_o=0 
+
+replace firstdemo_d=1 if year==min_demo_d
+replace firstdemo_o=1 if year==min_demo_o
+
+
+gen tautau_d = firstdemo_d*year
+gen tautau_o = firstdemo_o*year 
+
+egen tautot_d = total(tautau_d), by(name_d) 
+egen tautot_o = total(tautau_o), by(name_o) 
+
+gen tau = year - min_demo_o  
+
+gen tau2 = year - min_demo_d 
+
+replace tau = . if tau>5 | tau<-5
+replace tau2 = . if tau2>5| tau2<-5
+
+rename tau lagvariable_d
+rename tau2 lagvariable_o
+
+lowess lnv lagvariable_d, nograph gen(mexlowess) 
+lowess lnv lagvariable_o, nograph gen(centrallowess) 
+
+*IMPORTERS
+*Another take at the tau graph but simplify the dataset 
+preserve
+collapse lnv, by(name_d year demotreat_d) 
+
+egen min_demo_d = min(year) if demotreat_d==1, by(name_d)
+
+
+
+gen firstdemo_d=0 
+
+replace firstdemo_d=1 if year==min_demo_d
+
+
+gen tautau_d = firstdemo_d*year
+
+egen tautot_d = total(tautau_d), by(name_d) 
+
+gen tau = year - tautot_d
+
+replace tau = . if tau>5 | tau<-5
+
+rename tau lagvariable 
+
+lowess lnv lagvariable, nograph gen(lowesslnv) 
+
+collapse lowesslnv, by(lagvariable) 
+
+twoway (scatter lowesslnv lagvariable if lagvariable<=0)(line lowesslnv lagvariable if lagvariable<=0) ///
+	(scatter lowesslnv lagvariable if lagvariabl>=0)(line lowesslnv lagvariable if lagvariable>=0), subtitle(Lowess Graph of Impact for Importers) ///
+	title(Average Trend in Trade Before & After Transition to Democracy) ytitle(Log(Trade), margin(medium)) ///
+	xtitle(Leads/Lags) xlabel(-5(1)5) ///
+	legend(order(1 "Pre Democracy" 2 "Pre Democracy" 3 "Post Democracy" 4 "Post Democracy")) ///
+
+
+restore
+
+*EXPORTERS
+preserve
+collapse lnv, by(name_o year demotreat_o) 
+
+egen min_demo_o = min(year) if demotreat_o==1, by(name_o)
+
+
+
+gen firstdemo_o=0 
+
+replace firstdemo_o=1 if year==min_demo_o
+
+
+gen tautau_o = firstdemo_o*year
+
+egen tautot_o = total(tautau_o), by(name_o) 
+
+gen tau = year - tautot_o
+
+replace tau = . if tau>5 | tau<-5
+
+rename tau lagvariable 
+
+lowess lnv lagvariable, nograph gen(lowesslnv) 
+
+collapse lowesslnv, by(lagvariable) 
+
+twoway (scatter lowesslnv lagvariable if lagvariable<=0)(line lowesslnv lagvariable if lagvariable<=0) ///
+	(scatter lowesslnv lagvariable if lagvariabl>=0)(line lowesslnv lagvariable if lagvariable>=0), subtitle(Lowess Graph of Impact) ///
+	title(Average Trend in Trade Before & After Transition to Democracy) ytitle(Log(Trade), margin(medium)) ///
+	xtitle(Leads/Lags) xlabel(-5(1)5) ///
+	legend(order(1 "Pre Democracy" 2 "Pre Democracy" 3 "Post Democracy" 4 "Post Democracy")) ///
+	note(Exporters) 
+
+restore
 
 *country pair leads ???
 
@@ -744,20 +856,14 @@ tab regioncode_d region_d
 *using country FE model 
 *regions??
 forvalues x=1/5{
-areg lnv i.demotreat_d##i.demotreat_o lny i.year if regioncode_d==`x', ///
+areg lnv i.demotreat_d##i.demotreat_o lny i.year if regioncode_d==`x' & regioncode_o==`x', ///
 	absorb(impexp) cluster(impexp)
 est sto r4`x'
 esttab r4`x'
 *outreg2 using Regionstable, append excel
 }
 
-forvalues x=1/5{
-areg lnv i.demotreat_d##i.demotreat_o lny i.year if regioncode_o==`x', ///
-	absorb(impexp) cluster(impexp)
-est sto r5`x'
-esttab r5`x'
-*outreg2 using Regionstable, append excel
-}
+
 
 
 *out of sample prediction
