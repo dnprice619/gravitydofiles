@@ -78,7 +78,8 @@ replace simplegov_o = 2 if govtype_o==2 | govtype_o==3
 replace simplegov_o = 3 if govtype_o==4 | govtype_o==5
 replace simplegov_o=. if govtype_o==.
 
-*treatment
+*IMPORTANT EDIT 
+*CREATE SIMPLE treatment VARIABLE 
 gen demotreat_o = 0
 replace demotreat_o = 1 if simplegov_o==3
 
@@ -715,7 +716,6 @@ esttab r34
 
 
 
-
 *out of sample prediction
 *review just in case
 ****estimate the baseline specification excluding last 5 years of sample
@@ -727,3 +727,4 @@ esttab r34
 *------->________> stability of specification for diff time periods and sub groups
 
 *another test change in do file
+
