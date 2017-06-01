@@ -770,7 +770,7 @@ collapse lowesslnv, by(lagvariable)
 
 twoway (scatter lowesslnv lagvariable if lagvariable<=0)(line lowesslnv lagvariable if lagvariable<=0) ///
 	(scatter lowesslnv lagvariable if lagvariabl>=0)(line lowesslnv lagvariable if lagvariable>=0), subtitle(Lowess Graph of Impact for Importers) ///
-	title(Average Trend in Trade Before & After Transition to Democracy) ytitle(Log(Trade), margin(medium)) ///
+	title(Trend in Trade & Transition to Democracy) ytitle(Log(Trade), margin(medium)) ///
 	xtitle(Leads/Lags) xlabel(-5(1)5) ///
 	legend(order(1 "Pre Democracy" 2 "Pre Democracy" 3 "Post Democracy" 4 "Post Democracy")) ///
 
@@ -805,11 +805,11 @@ lowess lnv lagvariable, nograph gen(lowesslnv)
 collapse lowesslnv, by(lagvariable) 
 
 twoway (scatter lowesslnv lagvariable if lagvariable<=0)(line lowesslnv lagvariable if lagvariable<=0) ///
-	(scatter lowesslnv lagvariable if lagvariabl>=0)(line lowesslnv lagvariable if lagvariable>=0), subtitle(Lowess Graph of Impact) ///
-	title(Average Trend in Trade Before & After Transition to Democracy) ytitle(Log(Trade), margin(medium)) ///
+	(scatter lowesslnv lagvariable if lagvariabl>=0)(line lowesslnv lagvariable if lagvariable>=0), subtitle(Lowess Graph of Impact for Exporters) ///
+	title( Trend in Trade & Transition to Democracy) ytitle(Log(Trade), margin(medium)) ///
 	xtitle(Leads/Lags) xlabel(-5(1)5) ///
-	legend(order(1 "Pre Democracy" 2 "Pre Democracy" 3 "Post Democracy" 4 "Post Democracy")) ///
-	note(Exporters) 
+	legend(order(1 "Pre Democracy" 2 "Pre Democracy" 3 "Post Democracy" 4 "Post Democracy")) 
+
 
 restore
 
